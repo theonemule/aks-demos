@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: keen
+  labels:
+    app: keen
+spec:
+  ports:
+  - port: 80
+    targetPort: 80  
+    name: http
+  selector:
+    app: keen
+  type: LoadBalancer  
+---
+apiVersion: apps/v1 
+kind: Deployment 
+metadata:
+  name: keen
+spec:
+  selector:
+    matchLabels:
+      app: keen
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: keen
+    spec:
+      containers:
+      - name: keen-kontainer
+        image: blaize/keen
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: "/dos"
+          name: volume
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: azurefile
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azurefile
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  resources:
+    requests:
+      storage: 5Gi
+---        
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: azurefile
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile
+  azureFile:
+    secretName: azure-secret
+    shareName: dosshare
+    readOnly: false
+  mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=1000
+  - gid=1000
+  - mfsymlinks
+  - nobrl

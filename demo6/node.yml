@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeapp1svc
+  labels:
+    app: nodeapp1svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 3000  
+    name: http
+  selector:
+    app: nodeapp1
+  type: LoadBalancer  
+---
+apiVersion: apps/v1 
+kind: Deployment 
+metadata:
+  name: nodeapp1
+spec:
+  selector:
+    matchLabels:
+      app: nodeapp1
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nodeapp1
+    spec:
+      containers:
+      - name: nodeapp-container
+        image: blaize/aksdemo
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000           
+---          
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeapp2svc
+  labels:
+    app: nodeapp2svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 3000  
+    name: http
+  selector:
+    app: nodeapp2
+  type: LoadBalancer  
+---
+apiVersion: apps/v1 
+kind: Deployment 
+metadata:
+  name: nodeapp2
+spec:
+  selector:
+    matchLabels:
+      app: nodeapp2
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nodeapp2
+    spec:
+      containers:
+      - name: nodeapp-container
+        image: blaize/aksdemo
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000           
+      tolerations:
+      - key: "stack"
+        operator: "Equal"
+        value: "nodejs"
+        effect: "NoSchedule"        
