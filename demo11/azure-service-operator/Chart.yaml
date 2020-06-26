@@ -1,0 +1,13 @@
+apiVersion: v2
+appVersion: 0.1.0
+dependencies:
+- condition: azureUseMI
+  name: aad-pod-identity
+  repository: https://raw.githubusercontent.com/Azure/aad-pod-identity/master/charts
+  version: 1.5.5
+description: Deploy components and dependencies of azure-service-operator
+home: https://github.com/Azure/azure-service-operator
+name: azure-service-operator
+sources:
+- https://github.com/Azure/azure-service-operator
+version: 0.1.0
