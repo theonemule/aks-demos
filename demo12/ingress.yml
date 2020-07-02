@@ -1,0 +1,145 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: http-ingress
+  labels:
+    app: ingress  
+  annotations:
+    kubernetes.io/ingress.class: addon-http-application-routing 
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"      
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: nodeapp1svc
+          servicePort: 80      
+      - path: /app1
+        backend:
+          serviceName: nodeapp1svc
+          servicePort: 80
+      - path: /app2
+        backend:
+          serviceName: nodeapp2svc
+          servicePort: 80
+      - path: /keen
+        backend:
+          serviceName: keen
+          servicePort: 80          
+---          
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeapp1svc
+  labels:
+    app: nodeapp1svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 3000  
+    name: http
+  selector:
+    app: nodeapp1
+  type: ClusterIP  
+---
+apiVersion: apps/v1 
+kind: Deployment 
+metadata:
+  name: nodeapp1
+spec:
+  selector:
+    matchLabels:
+      app: nodeapp1
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nodeapp1
+      annotations:
+        'consul.hashicorp.com/connect-inject': 'true'           
+    spec:
+      containers:
+      - name: nodeapp-container
+        image: blaize/aksdemo
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000           
+---          
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeapp2svc
+  labels:
+    app: nodeapp2svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 3000  
+    name: http
+  selector:
+    app: nodeapp2
+  type: ClusterIP  
+---
+apiVersion: apps/v1 
+kind: Deployment 
+metadata:
+  name: nodeapp2
+spec:
+  selector:
+    matchLabels:
+      app: nodeapp2
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nodeapp2
+      annotations:
+        'consul.hashicorp.com/connect-inject': 'true'            
+    spec:
+      containers:
+      - name: nodeapp-container
+        image: blaize/aksdemo
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000           
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keen
+  labels:
+    app: keen
+spec:
+  ports:
+  - port: 80
+    targetPort: 80  
+    name: http
+  selector:
+    app: keen
+  type: ClusterIP 
+---
+apiVersion: apps/v1 
+kind: Deployment 
+metadata:
+  name: keen
+spec:
+  selector:
+    matchLabels:
+      app: keen
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: keen
+      annotations:
+        'consul.hashicorp.com/connect-inject': 'true'           
+    spec:
+      containers:
+      - name: keen-kontainer
+        image: blaize/keen
+        ports:
+        - containerPort: 80          
