@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wordpress
+data:
+  db-password: "password1"
+  db-username: "blaize"  
