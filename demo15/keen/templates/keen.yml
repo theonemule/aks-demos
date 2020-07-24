@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "keen.fullname" . }}
+  labels:
+    app: {{ include "keen.fullname" . }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - port: {{ .Values.service.port }} 
+    targetPort: 80  
+    name: http
+  selector:
+    app: {{ include "keen.fullname" . }}  
+---
+apiVersion: apps/v1 
+kind: Deployment 
+metadata:
+  name: {{ include "keen.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "keen.fullname" . }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ include "keen.fullname" . }}
+    spec:
+      containers:
+      - name: keen-kontainer
+        env:
+        - name: PASSWORD
+          value: {{ .Values.password }}    
+        image: blaize/keen
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
