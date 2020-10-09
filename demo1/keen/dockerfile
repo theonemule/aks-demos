@@ -20,4 +20,5 @@ RUN apt-get update && \
 	sed -i 's/usescancodes=true/usescancodes=false/' ~/.dosbox/dosbox.conf && \
 	openssl req -x509 -nodes -newkey rsa:2048 -keyout ~/novnc.pem -out ~/novnc.pem -days 3650 -subj "/C=US/ST=NY/L=NY/O=NY/OU=NY/CN=NY emailAddress=email@example.com"
 EXPOSE 80
-CMD vncserver && websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 80 localhost:5901 && tail -f /dev/null
+CMD echo $PASSWORD | vncpasswd -f > ~/.vnc/passwd && \
+	vncserver && websockify -D --web=/usr/share/novnc/ --cert=~/novnc.pem 80 localhost:5901 && tail -f /dev/null

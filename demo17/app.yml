@@ -1,41 +1,41 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: keen
+  name: myapp
   labels:
-    app: keen
+    app: myapp
 spec:
   ports:
   - port: 80
     targetPort: 80  
     name: http
   selector:
-    app: keen
+    app: myapp
   type: LoadBalancer  
 ---
 apiVersion: apps/v1 
 kind: Deployment 
 metadata:
-  name: keen
+  name: myapp
 spec:
   selector:
     matchLabels:
-      app: keen
+      app: myapp
   replicas: 1
   template:
     metadata:
       labels:
-        app: keen
+        app: myapp
     spec:
       containers:
-      - name: keen-kontainer
-        image: blaize/keen
+      - name: myapp-kontainer
+        image: nginx
         ports:
         - containerPort: 80
         volumeMounts:
-        - mountPath: "/dos"
+        - mountPath: "/mystuff"
           name: volume
       volumes:
       - name: volume
         persistentVolumeClaim:
-          claimName: azurefile
+          claimName: nfs

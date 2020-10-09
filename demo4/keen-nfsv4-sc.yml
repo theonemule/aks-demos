@@ -1,0 +1,9 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: azurefile-csi
+provisioner: file.csi.azure.com
+parameters:
+  resourceGroup: storage  # optional, only set this when storage account is not in the same resource group as agent node
+  storageAccount: blaizenfs
+  protocol: nfs  # use "fsType: nfs" in v0.8.0

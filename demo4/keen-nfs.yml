@@ -30,6 +30,12 @@ spec:
       containers:
       - name: keen-kontainer
         image: blaize/keen
-        imagePullPolicy: Always
         ports:
         - containerPort: 80
+        volumeMounts:
+        - mountPath: "/dos"
+          name: volume
+      volumes:
+      - name: volume
+        persistentVolumeClaim:
+          claimName: nfs

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs
+spec:
+  capacity:
+    storage: 1000Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: blaizenfsv4.file.core.windows.net
+    path: "/blaizenfsv4/nfs4vol"
+  mountOptions:
+    - vers=4
+    - minorversion=1
+    - sec=sys
